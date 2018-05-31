@@ -1,0 +1,76 @@
+Zadanie 2
+
+Termin oddania: 26.03.2018, godz. 20.00
+
+Zaimplementuj w asemblerze x86_64 uogólniony semafor, który może być używany
+w programach napisanych w języku C. Implementacja semafora ma się składać
+z trzech funkcji, które w C będą widziane jako:
+
+void proberen(int32_t *semaphore, int32_t value);
+void verhogen(int32_t *semaphore, int32_t value);
+uint64_t proberen_time(int32_t *semaphore, int32_t value);
+
+Parametr semaphore jest adresem zmiennej przechowującej wartość semafora.
+Parametr value jest liczbą całkowitą z przedziału od 1 do 2^31 - 1.
+
+Funkcja proberen sprawdza, czy wartość semafora jest większa lub równa value.
+Jeśli nie jest, to aktywnie czeka. Czekanie to nie powinno blokować dostępów
+do pamięci, czyli nie powinno wykorzystywać instrukcji z prefiksem lock ani też
+instrukcji xchg. Jeśli wartość semafora jest większa lub równa value, to funkcja
+próbuje ją atomowo zmniejszyć. Można do tego wykorzystać instrukcję lock xadd.
+Jeśli zmniejszenie się powiodło, następuje wyjście z funkcji. Zmniejszenie może
+się nie powieść, bo jakiś inny wątek, też czekający na tym samym semaforze, może
+być szybszy i zmniejszyć wartość semafora poniżej value. W takim przypadku
+funkcja wraca do aktywnego oczekiwania na zwiększenie wartości semafora.
+
+Funkcja verhogen zwiększa atomowo wartość semafora o value. Można do tego
+wykorzystać instrukcję lock add.
+
+Funkcja proberen_time woła funkcję proberen z tymi samymi argumentami, które
+dostała, i mierzy (zwraca) czas przebywania sterowania w proberen. W tym celu
+wała dwukrotnie funkcję
+
+uint64_t get_os_time(void);
+
+Pierwszy raz woła ją na początku przed wywołaniem proberen, a drugi – tuż przed
+zakończeniem, gdy nastąpi powrót z proberen. Funkcja get_os_time daje liczbę
+tyknięć zegara systemowego. Funkcja proberen_time oblicza czas działania jako
+różnicę tych wartości.
+
+Z powyższego opisu wynika, że wątek czekający na semaforze na mniejszą wartość
+może zagłodzić wątek czekający na większą wartość i godzimy się z tym.
+
+Zadanie nie wymaga napisania dużego kodu. Cały kod maszynowy powyższych funkcji
+nie powinien zajmować łącznie więcej nić sto kilkadziesiąt bajtów. Jednak
+rozwiązanie powinno być przemyślane i dobrze przetestowane. Nie udostępniamy
+naszych testów, więc przetestowanie rozwiązania jest częścią zadania, choć nie
+wymagamy pokazywania tych testów. W szczególności trzeba zaimplementować własną
+funkcję get_os_time, ale nie należy jej dołączać do rozwiązania, gdyż w testach,
+aby były deterministyczne, będziemy korzystać z naszej jej implementacji.
+Dokładnie będziemy też sprawdzać zgodność rozwiązania z wymaganiami ABI, czyli
+prawidłowość użycia rejestrów i stosu procesora.
+
+Tekst źródłowy rozwiązania należy umieścić w pliku semaphore.asm w repozytorium
+SVN w katalogu https://svn.mimuw.edu.pl/repos/SO/studenci/login/zadanie2, gdzie
+login to identyfikator używany do logowania w laboratorium. W katalogu
+z rozwiązaniem nie wolno umieszczać żadnych innych plików.
+
+Nie wolno korzystać z żadnych bibliotek. Rozwiązanie będzie asemblowane na
+maszynie students poleceniem:
+
+nasm -f elf64 -o semaphore.o semaphore.asm
+
+Oceniane będą poprawność i jakość tekstu źródłowego, rozmiar kodu maszynowego
+oraz spełnienie formalnych wymagań podanych w treści zadania. Kod nieasemblujący
+się otrzyma 0 punktów. Rozwiązanie zostanie poddane testom automatycznym.
+Pojedynczy test może zakończyć się powodzeniem, niepowodzeniem (poważny błąd)
+lub częściowym niepowodzeniem (drobny błąd). Jeśli program przejdzie p z r
+testów automatycznych, otrzyma ocenę, która jest podłogą z wartości 5p/r. Przy
+czym częściowe niepowodzenie będzie zaliczane jako połowa testu. Od tej oceny
+zostaną ewentualnie odjęte punkty za:
+zbyt duży rozmiar kodu maszynowego;
+złą jakość tekstu źródłowego, brak komentarzy itp.;
+błędy formalne, np. zła nazwa pliku w repozytorium.
+Jeśli tak wyliczona ocena wyjdzie ujemna, rozwiązanie otrzyma 0 punktów.
+Liczba testów i próg, od którego będą odejmowane punkty za przekroczenie
+rozmiaru kodu maszynowego zostaną ustalone po terminie oddania rozwiązania.

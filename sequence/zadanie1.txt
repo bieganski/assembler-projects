@@ -1,0 +1,59 @@
+Zadanie 1
+
+Termin oddania: 19.03.2018, godz. 20.00
+
+Na potrzeby tego zadania definiujemy zbiór N zawierający liczby całkowite od 0
+do 255. Mówimy, że ciąg elementów zbioru N jest poprawny, jeśli istnieje taki
+podzbiór M zbioru N, nie zawierający zera, że dany ciąg jest postaci
+
+(permutacja M, 0, permutacja M, 0, ..., permutacja M, 0).
+
+Przykłady poprawnych ciągów:
+
+(0),
+(0, 0),
+(1, 2, 0, 1, 2, 0),
+(1, 2, 0, 2, 1, 0).
+
+Przykłady ciągów, które nie są poprawne:
+
+(),
+(1),
+(1, 1, 0),
+(1, 2, 0, 1, 0),
+(1, 2, 0, 1, 3, 0).
+
+Napisz w asemblerze x86_64 program, który jako argument przyjmuje nazwę pliku
+i sprawdza, czy ten plik zawiera poprawną binarną reprezentację ciągu. Każdy
+bajt pliku interpretujemy jako 8-bitową liczbę bez znaku reprezentującą jeden
+element ciągu.
+
+Program niczego nie wypisuje. Program zwraca wartość (ang. exit code) 0, jeśli
+wczytany ciąg jest poprawny, a 1 w przeciwnym przypadku. Ponadto program zwraca
+1, gdy podano złą liczbę argumentów lub podany argument jest niepoprawny.
+
+Tekst źródłowy programu należy umieścić w pliku sequence.asm w repozytorium SVN
+w katalogu https://svn.mimuw.edu.pl/repos/SO/studenci/login/zadanie1, gdzie
+login to identyfikator używany do logowania w laboratorium. W katalogu
+z rozwiązaniem nie wolno umieszczać żadnych innych plików.
+
+Nie wolno korzystać z żadnych bibliotek. Rozwiązanie będzie kompilowane na
+maszynie students poleceniami:
+
+nasm -f elf64 -o sequence.o sequence.asm
+ld --fatal-warnings -o sequence sequence.o
+
+Oceniane będą poprawność i czas działania programu, rozmiar kodu maszynowego,
+jakość kodu źródłowego i spełnienie formalnych wymagań podanych w treści
+zadania. Program niekompilujący się otrzyma 0 punktów. Jeśli program przejdzie
+(tzn. zadziała poprawnie i zmieści się w limicie czasu) p z r testów
+automatycznych, otrzyma ocenę, która jest podłogą z wartości 10p/r - 5.
+Od tej oceny zostaną ewentualnie odjęte punkty za:
+zbyt długi sumaryczny czas działania;
+zbyt duży rozmiar sekcji .text, .data i .rodata w kodzie binarnym;
+złą jakość tekstu źródłowego, brak komentarzy itp.;
+błędy formalne, np. złą nazwę pliku w repozytorium.
+Jeśli tak wyliczona ocena wyjdzie ujemna, rozwiązanie otrzyma 0 punktów.
+Liczba testów, limity czasowe i progi, od których będą odejmowane punkty za
+przekroczenie rozmiaru kodu maszynowego zostaną ustalone po terminie oddania
+rozwiązania.
